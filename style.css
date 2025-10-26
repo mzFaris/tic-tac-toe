@@ -1,0 +1,9 @@
+:root {
+    --size: 250px;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(3, var(--size));
+    grid-template-rows: repeat(3, var(--size));
+}
