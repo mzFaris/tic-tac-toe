@@ -2,6 +2,11 @@
     --size: 250px;
 }
 
+body {
+    display: flex;
+    gap: 5rem;
+}
+
 #board {
     display: grid;
     grid-template-columns: repeat(3, var(--size));
@@ -10,4 +15,9 @@
 
 #board > button {
     font-size: 6rem;
+}
+
+.container p,
+h1 {
+    font-size: 3rem;
 }

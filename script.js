@@ -58,7 +58,7 @@ const gameBoard = (function () {
     }
 
     i = 2;
-    if (board[i] === mark && board[i + 2] === mark && board[i + 2] === mark) {
+    if (board[i] === mark && board[i + 2] === mark && board[i + 4] === mark) {
       return true;
     }
 
@@ -80,20 +80,38 @@ function createPlayer(name, mark) {
 }
 
 const gameController = (function () {
-  const player1 = createPlayer("player 1", 0);
-  const player2 = createPlayer("player 2", 1);
+  const player1 = createPlayer("Player 1", 0);
+  const player2 = createPlayer("Player 2", 1);
 
   let currentPlayer = player1;
   const getCurrentPlayer = () => currentPlayer;
 
-  const showWin = () => {};
-  const showTie = () => {};
+  const showWin = () => {
+    document
+      .querySelector("#current-player-container")
+      .setAttribute("hidden", "");
+    const gameStatus = document.querySelector("#game-status");
+    gameStatus.removeAttribute("hidden");
+    gameStatus.innerText = `${currentPlayer.name} Win!`;
+  };
+  const showTie = () => {
+    document
+      .querySelector("#current-player-container")
+      .setAttribute("hidden", "");
+    const gameStatus = document.querySelector("#game-status");
+    gameStatus.removeAttribute("hidden");
+    gameStatus.innerText = "Tie!";
+  };
 
   const nextPlayer = () => {
     currentPlayer = currentPlayer === player1 ? player2 : player1;
   };
 
-  return { getCurrentPlayer, nextPlayer };
+  const printCurrentPlayer = () => {
+    document.querySelector("#current-player").innerText = currentPlayer.name;
+  };
+
+  return { getCurrentPlayer, nextPlayer, showWin, showTie, printCurrentPlayer };
 })();
 
 document.querySelectorAll("#board > button").forEach((button) =>
@@ -109,6 +127,16 @@ document.querySelectorAll("#board > button").forEach((button) =>
 
     e.target.innerText =
       gameController.getCurrentPlayer().mark === 0 ? "X" : "O";
+
+    if (gameBoard.isWin()) {
+      gameController.showWin();
+      return;
+    } else if (gameBoard.isTie()) {
+      gameController.showTie();
+      return;
+    }
+
     gameController.nextPlayer();
+    gameController.printCurrentPlayer();
   }),
 );
