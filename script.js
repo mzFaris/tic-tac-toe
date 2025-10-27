@@ -1,6 +1,10 @@
+const BOARD_SIZE = 3 * 3;
+
 const gameBoard = (function () {
   const board = Array(9);
+  let filledCount = 0;
   let winner;
+  let tie = false;
 
   function printBoard() {
     console.log(board.slice(0, 3));
@@ -10,19 +14,23 @@ const gameBoard = (function () {
 
   function markBoard({ name, mark }, pos) {
     if (pos < 0 || 9 < pos) {
-      return;
+      return false;
     }
 
     if (board[pos] !== undefined) {
-      return;
+      return false;
     }
 
     board[pos] = mark;
-    printBoard();
+    filledCount++;
 
     if (checkWin(mark)) {
       winner = name;
+    } else {
+      checkTie();
     }
+
+    return true;
   }
 
   function checkWin(mark) {
@@ -57,14 +65,50 @@ const gameBoard = (function () {
     return false;
   }
 
-  const isWin = () => winner;
+  function checkTie() {
+    tie = filledCount === BOARD_SIZE;
+  }
 
-  return { printBoard, markBoard, isWin };
+  const isWin = () => winner;
+  const isTie = () => tie;
+
+  return { printBoard, markBoard, isWin, isTie };
 })();
 
 function createPlayer(name, mark) {
   return { name, mark };
 }
 
-const player1 = createPlayer("player 1", 0);
-const player2 = createPlayer("player 2", 1);
+const gameController = (function () {
+  const player1 = createPlayer("player 1", 0);
+  const player2 = createPlayer("player 2", 1);
+
+  let currentPlayer = player1;
+  const getCurrentPlayer = () => currentPlayer;
+
+  const showWin = () => {};
+  const showTie = () => {};
+
+  const nextPlayer = () => {
+    currentPlayer = currentPlayer === player1 ? player2 : player1;
+  };
+
+  return { getCurrentPlayer, nextPlayer };
+})();
+
+document.querySelectorAll("#board > button").forEach((button) =>
+  button.addEventListener("click", (e) => {
+    const isValid = gameBoard.markBoard(
+      gameController.getCurrentPlayer(),
+      Number(e.target.id) - 1,
+    );
+
+    if (!isValid) {
+      return;
+    }
+
+    e.target.innerText =
+      gameController.getCurrentPlayer().mark === 0 ? "X" : "O";
+    gameController.nextPlayer();
+  }),
+);

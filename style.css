@@ -7,3 +7,7 @@
     grid-template-columns: repeat(3, var(--size));
     grid-template-rows: repeat(3, var(--size));
 }
+
+#board > button {
+    font-size: 6rem;
+}
