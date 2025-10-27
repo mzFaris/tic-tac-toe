@@ -71,8 +71,14 @@ const gameBoard = (function () {
 
   const isWin = () => winner;
   const isTie = () => tie;
+  const restartBoard = () => {
+    board.splice(0);
+    filledCount = 0;
+    winner = null;
+    tie = false;
+  };
 
-  return { printBoard, markBoard, isWin, isTie };
+  return { printBoard, markBoard, isWin, isTie, restartBoard };
 })();
 
 function createPlayer(name, mark) {
@@ -93,6 +99,7 @@ const gameController = (function () {
     const gameStatus = document.querySelector("#game-status");
     gameStatus.removeAttribute("hidden");
     gameStatus.innerText = `${currentPlayer.name} Win!`;
+    showRestartButton();
   };
   const showTie = () => {
     document
@@ -101,6 +108,22 @@ const gameController = (function () {
     const gameStatus = document.querySelector("#game-status");
     gameStatus.removeAttribute("hidden");
     gameStatus.innerText = "Tie!";
+    showRestartButton();
+  };
+
+  function showRestartButton() {
+    document.querySelector("#restart").removeAttribute("hidden");
+  }
+
+  const restartGame = () => {
+    document.querySelectorAll("#board > button").forEach((button) => {
+      button.innerText = "";
+    });
+    document
+      .querySelector("#current-player-container")
+      .removeAttribute("hidden");
+    document.querySelector("#game-status").setAttribute("hidden", "");
+    document.querySelector("#restart").setAttribute("hidden", "");
   };
 
   const nextPlayer = () => {
@@ -111,7 +134,14 @@ const gameController = (function () {
     document.querySelector("#current-player").innerText = currentPlayer.name;
   };
 
-  return { getCurrentPlayer, nextPlayer, showWin, showTie, printCurrentPlayer };
+  return {
+    getCurrentPlayer,
+    nextPlayer,
+    showWin,
+    showTie,
+    printCurrentPlayer,
+    restartGame,
+  };
 })();
 
 document.querySelectorAll("#board > button").forEach((button) =>
@@ -140,3 +170,8 @@ document.querySelectorAll("#board > button").forEach((button) =>
     gameController.printCurrentPlayer();
   }),
 );
+
+document.querySelector("#restart").addEventListener("click", (e) => {
+  gameBoard.restartBoard();
+  gameController.restartGame();
+});
